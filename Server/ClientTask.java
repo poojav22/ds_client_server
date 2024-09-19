@@ -78,6 +78,38 @@ public class ClientTask implements Runnable {
       }
     } else if (udpClientSocket != null) {
       //add udp block here
+      try {
+        System.out.println("running udp client thread");
+        while (true) {
+
+          String command = new String(dataPacket.getData(),0,dataPacket.getLength());
+          System.out.println("received:" + command);
+          Scanner st = new Scanner(command);
+          String tag = st.next();
+          String response = null;
+          if (tag.equals("search")) {
+            response = service.searchUserOrders(st.next());
+          } else if (tag.equals("purchase")) {
+            String userName = st.next();
+            String productName = st.next();
+            int quantity = st.nextInt();
+            response = service.purchase(userName, productName, quantity);
+          } else if (tag.equals("cancel")) {
+            response = service.cancelOrder(st.nextInt());
+          } else if (tag.equals("list")) {
+            response = service.listProducts();
+          } else if (tag.equals("close")) {
+            udpClientSocket.close();
+          }
+          byte[] responseData = response.getBytes();
+          DatagramPacket sendPacket = new DatagramPacket(responseData, responseData.length,
+              dataPacket.getAddress(), dataPacket.getPort());
+          udpClientSocket.send(sendPacket);
+
+        }
+      } catch (IOException e) {
+        System.err.println(e);
+      }
     }
   }
 

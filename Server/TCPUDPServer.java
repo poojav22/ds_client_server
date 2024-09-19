@@ -55,25 +55,18 @@ public class TCPUDPServer {
       @Override
       public void run() {
         try {
-          DatagramPacket datapacket, returnpacket;
+          DatagramPacket recievePacket;
           int port = 8000;
           int len = 1024;
           DatagramSocket dataSocket = new DatagramSocket(port);
           System.out.println("UDP Server is running and Waiting for clients to connect...");
           byte[] buf = new byte[len];
           while (true) {
-            datapacket = new DatagramPacket(buf, buf.length);
-            dataSocket.receive(datapacket);
+            recievePacket = new DatagramPacket(buf, buf.length);
+            dataSocket.receive(recievePacket);
             clientProcessingPool.submit(
-                new ClientTask(dataSocket, datapacket, inventory, orders, orderIdIterator));
-            returnpacket = new DatagramPacket(
-                datapacket.getData(),
-                datapacket.getLength(),
-                datapacket.getAddress(),
-                datapacket.getPort());
-            dataSocket.send(returnpacket);
+                new ClientTask(dataSocket, recievePacket, inventory, orders, orderIdIterator));
           }
-
         } catch (SocketException e) {
           System.err.println("Unable to process client request");
           e.printStackTrace();
