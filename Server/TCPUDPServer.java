@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -22,7 +24,7 @@ public class TCPUDPServer {
 
   public static void main(String[] args) throws IOException {
     //read input file and write to hashmap
-    String filePath = "products.txt";
+    String filePath = "Server/products.txt";
     File file = new File(filePath);
     ProductTable inventory = new ProductTable(file);
     Orders orders = new Orders();
@@ -37,7 +39,7 @@ public class TCPUDPServer {
       @Override
       public void run() {
         try {
-          ServerSocket serverSocket = new ServerSocket(6666);
+          ServerSocket serverSocket = new ServerSocket(8000);
           System.out.println("TCP Server is running and Waiting for clients to connect...");
           while (true) {
             Socket clientSocket = serverSocket.accept();
@@ -56,7 +58,7 @@ public class TCPUDPServer {
       public void run() {
         try {
           DatagramPacket recievePacket;
-          int port = 7000;
+          int port = 8000;
           int len = 1024;
           DatagramSocket dataSocket = new DatagramSocket(port);
           System.out.println("UDP Server is running and Waiting for clients to connect...");

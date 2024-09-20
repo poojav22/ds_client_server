@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 public class ClientUDP implements  Connection{
     DatagramSocket udp;
-    int port = 7000;
+    int port = 8000;
     InetAddress host;
 
     public void connect() throws SocketException, UnknownHostException{

@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
@@ -46,7 +48,7 @@ public class ClientTask implements Runnable {
         System.out.println("running tcp client thread");
         Scanner sc = new Scanner(tcpClientSocket.getInputStream());
         PrintWriter pout = new PrintWriter(tcpClientSocket.getOutputStream());
-        while (true) {
+        while (tcpClientSocket != null) {
           String command = sc.nextLine();
           System.out.println("received:" + command);
           Scanner st = new Scanner(command);
@@ -68,47 +70,41 @@ public class ClientTask implements Runnable {
           } else if (tag.equals("list")) {
             response = service.listProducts();
             pout.println(response);
-          } else if (tag.equals("close")) {
-            tcpClientSocket.close();
           }
           pout.flush();
-
         }
       } catch (IOException e) {
         System.err.println(e);
       }
     } else if (udpClientSocket != null) {
-      //add udp block here
+
       try {
-        System.out.println("running udp client thread");
-        while (true) {
-
-          String command = new String(dataPacket.getData(),0,dataPacket.getLength());
-          System.out.println("received:" + command);
-          Scanner st = new Scanner(command);
-          String tag = st.next();
-          System.out.println("tag:" + tag);
-          String response = null;
-          if (tag.equals("search")) {
-            response = service.searchUserOrders(st.next());
-          } else if (tag.equals("purchase")) {
-            String userName = st.next();
-            String productName = st.next();
-            int quantity = st.nextInt();
-            response = service.purchase(userName, productName, quantity);
-          } else if (tag.equals("cancel")) {
-            response = service.cancelOrder(st.nextInt());
-          } else if (tag.equals("list")) {
-            response = service.listProducts();
-          } else if (tag.equals("close")) {
-            udpClientSocket.close();
-          }
-          byte[] responseData = response.getBytes();
-          DatagramPacket sendPacket = new DatagramPacket(responseData, responseData.length,
-              dataPacket.getAddress(), dataPacket.getPort());
-          udpClientSocket.send(sendPacket);
-
+        if (tcpClientSocket != null) {
+          tcpClientSocket.close();
         }
+        System.out.println("running udp client thread");
+        String command = new String(dataPacket.getData(), 0, dataPacket.getLength());
+        System.out.println("received:" + command);
+        Scanner st = new Scanner(command);
+        String tag = st.next();
+        System.out.println("tag:" + tag);
+        String response = null;
+        if (tag.equals("search")) {
+          response = service.searchUserOrders(st.next());
+        } else if (tag.equals("purchase")) {
+          String userName = st.next();
+          String productName = st.next();
+          int quantity = st.nextInt();
+          response = service.purchase(userName, productName, quantity);
+        } else if (tag.equals("cancel")) {
+          response = service.cancelOrder(st.nextInt());
+        } else if (tag.equals("list")) {
+          response = service.listProducts();
+        }
+        byte[] responseData = response.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(responseData, responseData.length,
+            dataPacket.getAddress(), dataPacket.getPort());
+        udpClientSocket.send(sendPacket);
       } catch (IOException e) {
         System.err.println(e);
       }

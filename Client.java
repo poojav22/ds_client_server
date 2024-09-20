@@ -43,8 +43,7 @@ public class Client {
         System.out.println("purchase options: <username> <product> <quantity>\nInput:");
         Scanner purchase = new Scanner(System.in);
         String purchaseDetails = purchase.nextLine();
-        conn.sendMessage("purchase");
-        conn.sendMessage(purchaseDetails);
+        conn.sendMessage("purchase " + purchaseDetails);
         String retVal = conn.receiveMessage();
         System.out.println(retVal);
 
@@ -54,8 +53,8 @@ public class Client {
         System.out.println("provide the orderid for cancelling:");
         Scanner scancel = new Scanner(System.in);
         String cancelid = scancel.nextLine();
-        conn.sendMessage("cancel");
-        conn.sendMessage(cancelid);
+        conn.sendMessage("cancel " + cancelid);
+   //     conn.sendMessage(cancelid);
         String retVal = conn.receiveMessage();
         System.out.println(retVal);
     }
@@ -64,8 +63,8 @@ public class Client {
         System.out.println("provide username for search:");
         Scanner ssearch = new Scanner(System.in);
         String searchid = ssearch.nextLine();
-        conn.sendMessage("search");
-        conn.sendMessage(searchid);
+        conn.sendMessage("search " + searchid);
+     //   conn.sendMessage(searchid);
         String retVal = conn.receiveMessage();
         System.out.println(retVal);
         return searchid;
@@ -89,7 +88,7 @@ public class Client {
         while(true) {
             System.out.println("Choose one of the following commands:\nsetmode\npurchase\ncancel\nsearch\nlist");
             Scanner input = new Scanner(System.in);
-            String cmd = input.nextLine();
+            String cmd = input.next();
             System.out.println("Entered command is:"+cmd);
             client.commandCheck(cmd);
             if (cmd.equals("setmode")) {
