@@ -51,6 +51,7 @@ public class ClientTask implements Runnable {
           System.out.println("received:" + command);
           Scanner st = new Scanner(command);
           String tag = st.next();
+          System.out.println("tag:" + tag);
           String response;
           if (tag.equals("search")) {
             response = service.searchUserOrders(st.next());
@@ -86,6 +87,7 @@ public class ClientTask implements Runnable {
           System.out.println("received:" + command);
           Scanner st = new Scanner(command);
           String tag = st.next();
+          System.out.println("tag:" + tag);
           String response = null;
           if (tag.equals("search")) {
             response = service.searchUserOrders(st.next());

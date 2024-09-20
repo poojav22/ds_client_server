@@ -12,15 +12,30 @@ public class ClientTCP implements Connection {
     String host = "127.0.0.1";
     Socket tcp;
     public void connect() throws UnknownHostException, IOException{
+        System.out.println("Connecting to " + host +":"+ port);
         tcp = new Socket(host, port);
         fromServer = new Scanner(tcp.getInputStream());
         toServer = new PrintStream(tcp.getOutputStream()) ;
     }
 
-    public String sendMessage(String input) {
+    public void sendMessage(String input) {
+        System.out.println("Sending: " +input);
         toServer.println(input);
-        String ret_value = fromServer.nextLine();
-        return ret_value;
+    }
+
+    public String receiveMessage() {
+        String retVal = "";
+        String val;
+        while (fromServer.hasNext()) {
+            val = fromServer.next();
+            retVal += val;
+            System.out.println("Response from server:" + retVal);
+            //if (val.isEmpty())) {
+            //    break;
+            //}
+        }
+        System.out.println("Response from server:" + retVal);
+        return retVal;
     }
 
     public void closeConn() throws IOException{

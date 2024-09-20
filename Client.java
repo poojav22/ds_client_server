@@ -4,6 +4,7 @@ import java.util.*;
 public class Client {
 
     static Connection conn;
+
     public void commandCheck(String cmd) {
         ArrayList<String> validCommandList = new ArrayList<>();
         validCommandList.add("setmode");
@@ -19,10 +20,13 @@ public class Client {
     }
 
     public Connection setmode() throws IOException {
-        System.out.println("setmode options:\nTCP\nUDP\nInput:");
+        if (conn != null) {
+            conn.closeConn();
+        }
+        System.out.println("setmode options:\ntcp|udp\nInput:");
         Scanner setmode = new Scanner(System.in);
         String mode = setmode.nextLine();
-        System.out.println("Connection mode:"+mode);
+        System.out.println("Connection mode: "+mode);
         if (mode.equals("tcp")) {
             System.out.println("Establishing TCP Connection");
             conn = new ClientTCP();
@@ -35,30 +39,43 @@ public class Client {
         return conn;
     }
 
-    public String purchase()  {
+    public void purchase() throws IOException  {
         System.out.println("purchase options: <username> <product> <quantity>\nInput:");
         Scanner purchase = new Scanner(System.in);
         String purchaseDetails = purchase.nextLine();
-        return purchaseDetails;
+        conn.sendMessage("purchase");
+        conn.sendMessage(purchaseDetails);
+        String retVal = conn.receiveMessage();
+        System.out.println(retVal);
 
     }
 
-    public String cancel() {
+    public void cancel() throws IOException {
         System.out.println("provide the orderid for cancelling:");
         Scanner scancel = new Scanner(System.in);
-        String cancel = scancel.nextLine();
-        return cancel;
+        String cancelid = scancel.nextLine();
+        conn.sendMessage("cancel");
+        conn.sendMessage(cancelid);
+        String retVal = conn.receiveMessage();
+        System.out.println(retVal);
     }
 
-    public String search() {
+    public String search() throws IOException {
         System.out.println("provide username for search:");
         Scanner ssearch = new Scanner(System.in);
-        String search = ssearch.nextLine();
-        return search;
+        String searchid = ssearch.nextLine();
+        conn.sendMessage("search");
+        conn.sendMessage(searchid);
+        String retVal = conn.receiveMessage();
+        System.out.println(retVal);
+        return searchid;
     }
 
-    public String list() {
+    public String list() throws IOException {
         System.out.println("listing all items in inventory");
+        conn.sendMessage("list");
+        String retVal = conn.receiveMessage();
+        System.out.println(retVal);
         return "list";
     }
 
@@ -70,7 +87,7 @@ public class Client {
         String retVal;
 
         while(true) {
-            System.out.println("Choose one of the following commands:\n1. setmode\n2. purchase\n3. cancel\n4. search\n5. list");
+            System.out.println("Choose one of the following commands:\nsetmode\npurchase\ncancel\nsearch\nlist");
             Scanner input = new Scanner(System.in);
             String cmd = input.nextLine();
             System.out.println("Entered command is:"+cmd);
@@ -78,29 +95,26 @@ public class Client {
             if (cmd.equals("setmode")) {
                 conn = client.setmode();
             }
+            if (conn == null) {
+                System.out.println("Connection mode is not yet. Setinng the default mode to TCP");
+                conn = new ClientTCP();
+                conn.connect();
+            }
             System.out.println(conn);
             if (cmd.equals("purchase")) {
-                value = client.purchase();
-                retVal = conn.sendMessage(value);
-                System.out.println(retVal);
+                client.purchase();
+
             }
             if (cmd.equals("cancel")) {
-                value = client.cancel();
-                retVal = conn.sendMessage(value);
-                System.out.println(retVal);
+                client.cancel();
             }
             if (cmd.equals("search")) {
                 value = client.search();
-                retVal = conn.sendMessage(value);
-                System.out.println(retVal);
             }
             if (cmd.equals("list")) {
                 value = client.list();
-                retVal = conn.sendMessage(value);
-                System.out.println(retVal);
+
             }
-            conn = new ClientUDP();
-            conn.connect();
     }
     }
 }
