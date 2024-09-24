@@ -10,17 +10,23 @@ import java.net.UnknownHostException;
 public class ClientUDP implements  Connection{
     DatagramSocket udp;
     int port = 8000;
+    String hostname = "localhost";
     InetAddress host;
 
+    public ClientUDP(String host, int port) {
+        this.hostname = host;
+        this.port = port;
+    }
+
     public void connect() throws SocketException, UnknownHostException{
-        host = InetAddress.getByName("localhost");
-        System.out.println("Connecting to " + host +":"+ port);
+        host = InetAddress.getByName(hostname);
+        //System.out.println("Connecting to " + host +":"+ port);
        udp = new DatagramSocket();
 
     }
 
     public void sendMessage(String value) throws IOException {
-        System.out.println("Sending: " +value);
+        //System.out.println("Sending: " +value);
         byte[] buf = value.getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, host, port);
         udp.send(packet);

@@ -12,7 +12,7 @@ public class ProductService {
   final String PURCHASE_SUCCESS = "You order has been placed, %d %s %s %d";
   final String CANCEL_SUCCESS = "Order %d is canceled";
   final String SEARCH_EMPTY = "No order found for %s";
-  final String ORDER_NOT_EXISTS = "Order Id not found. Order does not exist.";
+  final String ORDER_NOT_EXISTS = "%d not found, no such order";
   ProductTable table;
   AtomicInteger orderIdAtomicInteger;
   Orders orderList;
@@ -51,7 +51,7 @@ public class ProductService {
     System.out.println("Initiating Order cancel");
     Orders.Order cancelledOrder = orderList.cancel(orderId);
     if (cancelledOrder == null) {
-      return ORDER_NOT_EXISTS;
+      return String.format(ORDER_NOT_EXISTS, orderId);
     }
     String action = "cancel";
     int updateProductTable = table.update(cancelledOrder.productName, cancelledOrder.quantity,
@@ -78,7 +78,7 @@ public class ProductService {
   }
 
   private String mapOrder(Orders.Order order) {
-    return String.format("%d %s %d", order.orderId, order.productName, order.quantity);
+    return String.format("%d, %s, %d", order.orderId, order.productName, order.quantity);
   }
 
   public String listProducts() {
